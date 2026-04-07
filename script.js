@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCartFromLocalStorage();
     displayFeaturedFoods();
     updateCartUI();
+    addScrollReveal();
     
     // Event Listeners
     if (cartLink) {
@@ -76,8 +77,12 @@ document.addEventListener('DOMContentLoaded', function() {
             openCart();
         });
     }
-    closeCart.addEventListener('click', closeCartModal);
-    checkoutBtn.addEventListener('click', checkout);
+    if (closeCart) {
+        closeCart.addEventListener('click', closeCartModal);
+    }
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', checkout);
+    }
     
     // Close modal when clicking outside
     window.addEventListener('click', function(event) {
@@ -87,23 +92,50 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Add scroll reveal animations
+function addScrollReveal() {
+    const elements = document.querySelectorAll('.category-card, .food-card');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    elements.forEach(element => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'all 0.6s ease-out';
+        observer.observe(element);
+    });
+}
+
 // Display featured foods
 function displayFeaturedFoods() {
+    if (!featuredFoods) return;
+    
     featuredFoods.innerHTML = '';
     
     // Get first 3 items as featured
     const featuredItems = foodData.slice(0, 3);
     
-    featuredItems.forEach(food => {
+    featuredItems.forEach((food, index) => {
         const foodCard = document.createElement('div');
         foodCard.className = 'food-card';
+        foodCard.style.animationDelay = `${index * 0.1}s`;
         foodCard.innerHTML = `
-            <img src="${food.image}" alt="${food.name}">
+            <img src="${food.image}" alt="${food.name}" onerror="this.src='https://via.placeholder.com/300x200?text=Food+Image'">
             <div class="food-info">
                 <h3>${food.name}</h3>
                 <p>${food.description}</p>
                 <span class="price">$${food.price.toFixed(2)}</span>
-                <button class="add-to-cart" data-id="${food.id}">Add to Cart</button>
+                <button class="add-to-cart" data-id="${food.id}">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
             </div>
         `;
         featuredFoods.appendChild(foodCard);
@@ -128,6 +160,7 @@ function addToCart(foodId) {
         
         if (existingItem) {
             existingItem.quantity += 1;
+            showNotification(`${food.name} quantity increased!`, 'success');
         } else {
             cart.push({
                 id: food.id,
@@ -136,18 +169,61 @@ function addToCart(foodId) {
                 image: food.image,
                 quantity: 1
             });
+            showNotification(`${food.name} added to cart!`, 'success');
         }
         
         saveCartToLocalStorage();
         updateCartUI();
-        
-        // Show confirmation
-        alert(`${food.name} added to cart!`);
+        animateCartIcon();
     }
+}
+
+// Animate cart icon when item added
+function animateCartIcon() {
+    const cartCountElement = document.querySelector('.cart-count');
+    if (cartCountElement) {
+        cartCountElement.style.animation = 'pulse 0.5s ease';
+        setTimeout(() => {
+            cartCountElement.style.animation = '';
+        }, 500);
+    }
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `
+        <div class="notification-content ${type}">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 2000);
 }
 
 // Remove item from cart
 function removeFromCart(foodId) {
+    const item = cart.find(item => item.id === foodId);
+    if (item) {
+        showNotification(`${item.name} removed from cart!`, 'info');
+    }
     cart = cart.filter(item => item.id !== foodId);
     saveCartToLocalStorage();
     updateCartUI();
@@ -169,16 +245,33 @@ function updateQuantity(foodId, change) {
     }
 }
 
-// Update cart UI
+// Update cart UI - FIXED: Properly updates cart count display
 function updateCartUI() {
-    // Update cart count
+    // Calculate total items in cart
     const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-    cartCount.textContent = totalItems;
+    
+    // Update cart count badge
+    if (cartCount) {
+        cartCount.textContent = totalItems;
+        
+        // Add pulse animation when count changes
+        if (totalItems > 0) {
+            cartCount.style.display = 'inline-flex';
+            cartCount.style.animation = 'pulse 0.5s ease';
+            setTimeout(() => {
+                cartCount.style.animation = '';
+            }, 500);
+        } else {
+            cartCount.textContent = '0';
+        }
+    }
     
     // Update cart modal
+    if (!cartItems) return;
+    
     if (cart.length === 0) {
-        cartItems.innerHTML = '<p class="empty-cart-message">Your cart is empty</p>';
-        cartTotal.textContent = '0.00';
+        cartItems.innerHTML = '<p class="empty-cart-message">🛒 Your cart is empty</p>';
+        if (cartTotal) cartTotal.textContent = '0.00';
         return;
     }
     
@@ -208,7 +301,7 @@ function updateCartUI() {
         cartItems.appendChild(cartItem);
     });
     
-    cartTotal.textContent = total.toFixed(2);
+    if (cartTotal) cartTotal.textContent = total.toFixed(2);
     
     // Add event listeners to cart buttons
     document.querySelectorAll('.quantity-btn.minus').forEach(button => {
@@ -235,82 +328,92 @@ function updateCartUI() {
 
 // Open cart modal
 function openCart() {
-    cartModal.style.display = 'flex';
+    if (cartModal) {
+        cartModal.style.display = 'flex';
+        cartModal.style.animation = 'fadeInUp 0.3s ease-out';
+    }
 }
 
 // Close cart modal
 function closeCartModal() {
-    cartModal.style.display = 'none';
+    if (cartModal) {
+        cartModal.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            cartModal.style.display = 'none';
+        }, 300);
+    }
 }
 
 // Checkout function
 function checkout() {
     if (cart.length === 0) {
-        alert('Your cart is empty!');
+        showNotification('Your cart is empty!', 'error');
         return;
     }
     
-    // Save order to localStorage
     const order = {
         items: [...cart],
-        total: parseFloat(cartTotal.textContent),
-        timestamp: new Date().toISOString()
+        total: parseFloat(cartTotal ? cartTotal.textContent : '0'),
+        timestamp: new Date().toISOString(),
+        orderNumber: 'ORD-' + Date.now()
     };
     
-    // Get existing orders or initialize empty array
     const orders = JSON.parse(localStorage.getItem('orders')) || [];
     orders.push(order);
     localStorage.setItem('orders', JSON.stringify(orders));
     
-    // Generate bill preview
     generateBillPreview(order);
     
-    // Clear cart
     cart = [];
     saveCartToLocalStorage();
     updateCartUI();
     closeCartModal();
+    
+    showNotification('Order placed successfully!', 'success');
 }
 
 // Generate bill preview
 function generateBillPreview(order) {
-    // Create bill content
     let billContent = `
-=====================================
-          FOODIE DELIGHT
-      ORDER RECEIPT & BILL
-=====================================
+╔══════════════════════════════════════════════════════╗
+║                   FOODIE DELIGHT                      ║
+║                  ORDER RECEIPT & BILL                 ║
+╚══════════════════════════════════════════════════════╝
 
+Order Number: ${order.orderNumber}
 Date: ${new Date(order.timestamp).toLocaleString()}
 
-Items:
--------------------------------------
+────────────────────────────────────────────────────────
+ITEMS:
+────────────────────────────────────────────────────────
 `;
     
-    order.items.forEach(item => {
+    order.items.forEach((item, index) => {
         const itemTotal = (item.price * item.quantity).toFixed(2);
-        billContent += `${item.name}
-  Price: $${item.price.toFixed(2)} x ${item.quantity} = $${itemTotal}
--------------------------------------
+        billContent += `${index + 1}. ${item.name}
+   Price: $${item.price.toFixed(2)} x ${item.quantity} = $${itemTotal}
+────────────────────────────────────────────────────────
 `;
     });
     
     billContent += `
-Total Amount: $${order.total.toFixed(2)}
+SUB TOTAL: $${order.total.toFixed(2)}
+TAX (10%): $${(order.total * 0.1).toFixed(2)}
+────────────────────────────────────────────────────────
+TOTAL AMOUNT: $${(order.total * 1.1).toFixed(2)}
+────────────────────────────────────────────────────────
 
-=====================================
-    Thank you for your order!
-  Visit us again at Foodie Delight
-=====================================
+╔══════════════════════════════════════════════════════╗
+║         Thank you for your order!                    ║
+║         Visit us again at Foodie Delight             ║
+╚══════════════════════════════════════════════════════╝
 `;
     
-    // Show bill preview modal
     showBillPreview(billContent, order);
 }
 
 // Show bill preview modal
 function showBillPreview(billContent, order) {
-    // Create modal if it doesn't exist
     let billModal = document.getElementById('billModal');
     if (!billModal) {
         billModal = document.createElement('div');
@@ -319,24 +422,28 @@ function showBillPreview(billContent, order) {
         billModal.innerHTML = `
             <div class="cart-content" style="width: 90%; max-width: 700px;">
                 <div class="cart-header">
-                    <h2>Order Bill Preview</h2>
+                    <h2>🧾 Order Bill Preview</h2>
                     <span class="close-btn" id="closeBill">&times;</span>
                 </div>
                 <div class="cart-body" style="padding: 20px;">
-                    <div id="billPreview" style="white-space: pre-wrap; font-family: monospace; background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px; max-height: 400px; overflow-y: auto;">
-                        <!-- Bill content will be inserted here -->
+                    <div id="billPreview" style="white-space: pre-wrap; font-family: 'Courier New', monospace; background: linear-gradient(135deg, #f0fdf4, #dcfce7); padding: 20px; border-radius: 10px; margin-bottom: 20px; max-height: 400px; overflow-y: auto; font-size: 13px; line-height: 1.6;">
                     </div>
-                    <div class="cart-footer" style="display: flex; gap: 10px; justify-content: center;">
-                        <button class="btn-primary" id="downloadTxt" style="background: #28a745;">Download as TXT</button>
-                        <button class="btn-primary" id="downloadPdf" style="background: #dc3545;">Download as PDF</button>
-                        <button class="btn-primary" id="closeBillBtn">Close</button>
+                    <div class="cart-footer" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn-primary" id="downloadTxt" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                            📄 Download as TXT
+                        </button>
+                        <button class="btn-primary" id="downloadPdf" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                            📑 Download as PDF
+                        </button>
+                        <button class="btn-primary" id="closeBillBtn" style="background: linear-gradient(135deg, #6c757d, #5a6268);">
+                            ✖ Close
+                        </button>
                     </div>
                 </div>
             </div>
         `;
         document.body.appendChild(billModal);
         
-        // Add event listeners
         document.getElementById('closeBill').addEventListener('click', () => {
             billModal.style.display = 'none';
         });
@@ -353,7 +460,6 @@ function showBillPreview(billContent, order) {
             downloadBillAsPdf(billContent, order);
         });
         
-        // Close modal when clicking outside
         window.addEventListener('click', function(event) {
             if (event.target === billModal) {
                 billModal.style.display = 'none';
@@ -361,11 +467,13 @@ function showBillPreview(billContent, order) {
         });
     }
     
-    // Update bill content
-    document.getElementById('billPreview').textContent = billContent;
+    const billPreview = document.getElementById('billPreview');
+    if (billPreview) {
+        billPreview.textContent = billContent;
+    }
     
-    // Show modal
     billModal.style.display = 'flex';
+    billModal.style.animation = 'fadeInUp 0.3s ease-out';
 }
 
 // Download bill as TXT
@@ -374,26 +482,36 @@ function downloadBillAsTxt(billContent, order) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `foodie-delight-bill-${new Date(order.timestamp).getTime()}.txt`;
+    a.download = `foodie-delight-bill-${order.orderNumber}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    showNotification('Bill downloaded as TXT!', 'success');
 }
 
 // Download bill as PDF
 function downloadBillAsPdf(billContent, order) {
-    // For simplicity, we'll create a print-friendly version and trigger print
-    // In a real application, you might use a library like jsPDF
-    
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
         <html>
         <head>
-            <title>Foodie Delight Bill</title>
+            <title>Foodie Delight Bill - ${order.orderNumber}</title>
             <style>
-                body { font-family: monospace; margin: 20px; }
-                pre { white-space: pre-wrap; }
+                body { 
+                    font-family: 'Courier New', monospace; 
+                    margin: 40px;
+                    background: white;
+                }
+                pre { 
+                    white-space: pre-wrap;
+                    font-size: 14px;
+                    line-height: 1.6;
+                }
+                @media print {
+                    body { margin: 0; }
+                    pre { font-size: 12px; }
+                }
             </style>
         </head>
         <body>
@@ -401,12 +519,16 @@ function downloadBillAsPdf(billContent, order) {
             <script>
                 window.onload = function() {
                     window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 1000);
                 }
-            </script>
+            <\/script>
         </body>
         </html>
     `);
     printWindow.document.close();
+    showNotification('Opening print dialog for PDF...', 'success');
 }
 
 // Save cart to localStorage
@@ -433,22 +555,29 @@ function displayMenuFoods(category = 'all') {
         ? foodData 
         : foodData.filter(food => food.category === category);
     
-    filteredFoods.forEach(food => {
+    if (filteredFoods.length === 0) {
+        menuFoods.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">No items found in this category.</p>';
+        return;
+    }
+    
+    filteredFoods.forEach((food, index) => {
         const foodCard = document.createElement('div');
         foodCard.className = 'food-card';
+        foodCard.style.animationDelay = `${index * 0.1}s`;
         foodCard.innerHTML = `
-            <img src="${food.image}" alt="${food.name}">
+            <img src="${food.image}" alt="${food.name}" onerror="this.src='https://via.placeholder.com/300x200?text=Food+Image'">
             <div class="food-info">
                 <h3>${food.name}</h3>
                 <p>${food.description}</p>
                 <span class="price">$${food.price.toFixed(2)}</span>
-                <button class="add-to-cart" data-id="${food.id}">Add to Cart</button>
+                <button class="add-to-cart" data-id="${food.id}">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
             </div>
         `;
         menuFoods.appendChild(foodCard);
     });
     
-    // Add event listeners to add to cart buttons
     document.querySelectorAll('.add-to-cart').forEach(button => {
         button.addEventListener('click', function() {
             const foodId = parseInt(this.getAttribute('data-id'));
@@ -462,20 +591,15 @@ function setupFilterButtons() {
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // Remove active class from all buttons
             filterButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
             this.classList.add('active');
-            
-            // Get category and display foods
             const category = this.getAttribute('data-category');
             displayMenuFoods(category);
         });
     });
 }
 
-// Initialize menu page if on menu page
+// Initialize menu page
 if (document.querySelector('.menu-page')) {
     document.addEventListener('DOMContentLoaded', function() {
         loadCartFromLocalStorage();
@@ -483,7 +607,6 @@ if (document.querySelector('.menu-page')) {
         displayMenuFoods();
         setupFilterButtons();
         
-        // Event Listeners
         const cartLink = document.getElementById('cartLink');
         if (cartLink) {
             cartLink.addEventListener('click', function(e) {
@@ -491,9 +614,10 @@ if (document.querySelector('.menu-page')) {
                 openCart();
             });
         }
-        closeCart.addEventListener('click', closeCartModal);
+        if (closeCart) {
+            closeCart.addEventListener('click', closeCartModal);
+        }
         
-        // Close modal when clicking outside
         window.addEventListener('click', function(event) {
             if (event.target === cartModal) {
                 closeCartModal();
@@ -502,13 +626,12 @@ if (document.querySelector('.menu-page')) {
     });
 }
 
-// Initialize about page if on about page
+// Initialize about page
 if (document.querySelector('.about-page')) {
     document.addEventListener('DOMContentLoaded', function() {
         loadCartFromLocalStorage();
         updateCartUI();
         
-        // Event Listeners
         const cartLink = document.getElementById('cartLink');
         if (cartLink) {
             cartLink.addEventListener('click', function(e) {
@@ -516,9 +639,10 @@ if (document.querySelector('.about-page')) {
                 openCart();
             });
         }
-        closeCart.addEventListener('click', closeCartModal);
+        if (closeCart) {
+            closeCart.addEventListener('click', closeCartModal);
+        }
         
-        // Close modal when clicking outside
         window.addEventListener('click', function(event) {
             if (event.target === cartModal) {
                 closeCartModal();
@@ -527,13 +651,12 @@ if (document.querySelector('.about-page')) {
     });
 }
 
-// Initialize contact page if on contact page
+// Initialize contact page
 if (document.querySelector('.contact-page')) {
     document.addEventListener('DOMContentLoaded', function() {
         loadCartFromLocalStorage();
         updateCartUI();
         
-        // Event Listeners
         const cartLink = document.getElementById('cartLink');
         if (cartLink) {
             cartLink.addEventListener('click', function(e) {
@@ -541,27 +664,30 @@ if (document.querySelector('.contact-page')) {
                 openCart();
             });
         }
-        closeCart.addEventListener('click', closeCartModal);
+        if (closeCart) {
+            closeCart.addEventListener('click', closeCartModal);
+        }
         
-        // Close modal when clicking outside
         window.addEventListener('click', function(event) {
             if (event.target === cartModal) {
                 closeCartModal();
             }
         });
         
-        // Form submission
         const contactForm = document.getElementById('contactForm');
         if (contactForm) {
             contactForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Get form data
                 const name = document.getElementById('name').value;
                 const email = document.getElementById('email').value;
                 const message = document.getElementById('message').value;
                 
-                // Create contact message object
+                if (!name || !email || !message) {
+                    showNotification('Please fill in all fields!', 'error');
+                    return;
+                }
+                
                 const contactMessage = {
                     name: name,
                     email: email,
@@ -569,17 +695,70 @@ if (document.querySelector('.contact-page')) {
                     timestamp: new Date().toISOString()
                 };
                 
-                // Save to localStorage
                 const messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
                 messages.push(contactMessage);
                 localStorage.setItem('contactMessages', JSON.stringify(messages));
                 
-                // Reset form
                 contactForm.reset();
-                
-                // Show confirmation
-                alert('Thank you for your message! We will get back to you soon.');
+                showNotification('Thank you for your message! We will get back to you soon.', 'success');
             });
         }
     });
 }
+
+// Add CSS animations
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+    
+    .notification-content {
+        background: white;
+        padding: 15px 25px;
+        border-radius: 50px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+    }
+    
+    .notification-content.success {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+    }
+    
+    .notification-content.error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+    
+    .notification-content.info {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+    }
+`;
+document.head.appendChild(styleSheet);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foodie Delight - Order Delicious Food Online</title>
+    <title>Foodie Spice - Order Delicious Food Online</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,16 +12,16 @@
     <header>
         <div class="container">
             <div class="logo">
-                <img src="img/logo.png" alt="Foodie Delight Logo">
-                <h1>Foodie Delight</h1>
+                <img src="img/logo.png" alt="Foodie Spice Logo">
+                <h1>Foodie Spice</h1>
             </div>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="index.html" class="active">Home</a></li>
-                    <li><a href="menu.html">Menu</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                    <li><a href="#" id="cartLink">Cart <span class="cart-count">0</span></a></li>
+                    <li><a href="index.html" class="active">🏠 Home</a></li>
+                    <li><a href="menu.html">🍕 Menu</a></li>
+                    <li><a href="about.html">📖 About</a></li>
+                    <li><a href="contact.html">📞 Contact</a></li>
+                    <li><a href="#" id="cartLink">🛒 Cart <span class="cart-count">0</span></a></li>
                 </ul>
             </nav>
         </div>
@@ -31,9 +31,9 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1>Delicious Food Delivered to Your Doorstep</h1>
+                <h1>🍔 Delicious Food Delivered to Your Doorstep 🍕</h1>
                 <p>Order from our wide selection of mouth-watering dishes prepared by top chefs</p>
-                <a href="menu.html" class="btn-primary">Order Now</a>
+                <a href="menu.html" class="btn-primary">Order Now →</a>
             </div>
         </div>
     </section>
@@ -41,19 +41,19 @@
     <!-- Categories Section -->
     <section class="categories">
         <div class="container">
-            <h2>Popular Categories</h2>
+            <h2>🔥 Popular Categories</h2>
             <div class="category-grid">
                 <div class="category-card">
                     <img src="img/category/pizza.jpg" alt="Pizza">
-                    <h3>Pizza</h3>
+                    <h3>🍕 Pizza</h3>
                 </div>
                 <div class="category-card">
                     <img src="img/category/burger.jpg" alt="Burgers">
-                    <h3>Burgers</h3>
+                    <h3>🍔 Burgers</h3>
                 </div>
                 <div class="category-card">
                     <img src="img/category/sandwich.jpg" alt="Sandwiches">
-                    <h3>Sandwiches</h3>
+                    <h3>🥪 Sandwiches</h3>
                 </div>
             </div>
         </div>
@@ -62,7 +62,7 @@
     <!-- Featured Items Section -->
     <section class="featured">
         <div class="container">
-            <h2>Featured Items</h2>
+            <h2>⭐ Featured Items</h2>
             <div class="food-grid" id="featuredFoods">
                 <!-- Featured items will be loaded here by JavaScript -->
             </div>
@@ -73,19 +73,19 @@
     <div class="cart-modal" id="cartModal">
         <div class="cart-content">
             <div class="cart-header">
-                <h2>Your Cart</h2>
+                <h2>🛒 Your Cart</h2>
                 <span class="close-btn" id="closeCart">&times;</span>
             </div>
             <div class="cart-body">
                 <div id="cartItems">
                     <!-- Cart items will be loaded here -->
-                    <p class="empty-cart-message">Your cart is empty</p>
+                    <p class="empty-cart-message">🛍️ Your cart is empty</p>
                 </div>
                 <div class="cart-footer">
                     <div class="cart-total">
                         <h3>Total: $<span id="cartTotal">0.00</span></h3>
                     </div>
-                    <button class="btn-primary checkout-btn" id="checkoutBtn">Checkout</button>
+                    <button class="btn-primary checkout-btn" id="checkoutBtn">✅ Checkout</button>
                 </div>
             </div>
         </div>
@@ -96,27 +96,29 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Foodie Delight</h3>
+                    <h3>🍽️ Foodie Spice</h3>
                     <p>Delivering delicious food with love since 2025</p>
+                    <p style="margin-top: 15px;">⭐ 4.8 ★ (500+ reviews)</p>
                 </div>
                 <div class="footer-section">
-                    <h3>Quick Links</h3>
+                    <h3>🔗 Quick Links</h3>
                     <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="menu.html">Menu</a></li>
-                        <li><a href="about.html">About</a></li>
-                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="index.html">🏠 Home</a></li>
+                        <li><a href="menu.html">🍕 Menu</a></li>
+                        <li><a href="about.html">📖 About</a></li>
+                        <li><a href="contact.html">📞 Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h3>Contact Us</h3>
+                    <h3>📞 Contact Us</h3>
                     <p><i class="fas fa-map-marker-alt"></i> 123 Food Street, Yummy City</p>
                     <p><i class="fas fa-phone"></i> (123) 456-7890</p>
                     <p><i class="fas fa-envelope"></i> info@foodiedelight.com</p>
+                    <p><i class="fab fa-instagram"></i> @foodiedelight</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Foodie Delight. All rights reserved.</p>
+                <p>&copy; 2025 Foodie Spice. All rights reserved. 🍔 Made with ❤️</p>
             </div>
         </div>
     </footer>
