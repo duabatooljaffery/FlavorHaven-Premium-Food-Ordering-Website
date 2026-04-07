@@ -68,4 +68,3 @@ This project was developed to practice front-end web development and demonstrate
 <img width="947" height="434" alt="p2" src="https://github.com/user-attachments/assets/c42cc2a9-2af3-49db-96c7-76c5563cd7b9" />
 <img width="943" height="440" alt="p1" src="https://github.com/user-attachments/assets/d8e2da22-2e55-47f4-a1f2-23899bd4f336" />
 
->>>>>>> 619baa068eaff3c38060ac4f296ab1cdaaa076ce
