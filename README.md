@@ -1,5 +1,4 @@
 
-<<<<<<< HEAD
 # 🍔 Foodie Spice – Modern Food Ordering Website
 
 **Foodie Spice** is a modern and responsive food ordering website designed to provide users with a smooth and attractive online food browsing experience.
@@ -176,5 +175,5 @@ This project demonstrates:
 ---
 
 <img width="936" height="410" alt="cart" src="https://github.com/user-attachments/assets/33aebeb2-b60f-42c3-b712-994e525bf26b" />
->>>>>>> da4e6b4801c7472636e98f37e2a5532af8eeecd9
+
 
