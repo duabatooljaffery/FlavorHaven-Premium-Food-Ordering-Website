@@ -103,5 +103,7 @@ This project demonstrates:
 
 ---
 
+---
+
 <img width="936" height="410" alt="cart" src="https://github.com/user-attachments/assets/33aebeb2-b60f-42c3-b712-994e525bf26b" />
 
