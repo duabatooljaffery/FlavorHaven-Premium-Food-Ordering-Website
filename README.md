@@ -99,11 +99,8 @@ This project demonstrates:
 ## 📸 Preview
 
 > A modern food ordering experience with smooth UI, animations, and cart system.
-
----
+<br><br>
 <img width="950" height="440" alt="mainscreen" src="https://github.com/user-attachments/assets/a0e47fab-0a61-4b11-a1b3-f110eb50bf5d" />
-
----
-
+<br><br>
 <img width="936" height="410" alt="cart" src="https://github.com/user-attachments/assets/5ac278ca-ae65-4b6c-9ef4-06d2683cd37c" />
 
