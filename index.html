@@ -1,128 +1,626 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foodie Spice - Order Delicious Food Online</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>FlavorHaven | Premium Food Ordering</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fff9f5 0%, #fef3e8 100%);
+      color: #2d1b0e;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* --- Custom Scrollbar --- */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f5e6d3;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e65c00;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #bf4c00;
+    }
+
+    /* --- NAVBAR with glass morphism --- */
+    .navbar {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 0.75rem 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .logo a {
+      font-size: 1.9rem;
+      font-weight: 800;
+      text-decoration: none;
+      background: linear-gradient(135deg, #e65c00, #ff8c42, #f9a602);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+      transition: transform 0.2s ease;
+      display: inline-block;
+    }
+    .logo a:hover {
+      transform: scale(1.02);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.2rem;
+      list-style: none;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-links li a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #4a3727;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      font-size: 1rem;
+      padding: 0.5rem 0;
+      display: inline-block;
+      position: relative;
+    }
+
+    .nav-links li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, #e65c00, #ffaa33);
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .nav-links li a:hover::after,
+    .nav-links li a.active::after {
+      width: 100%;
+    }
+
+    .nav-links li a:hover,
+    .nav-links li a.active {
+      color: #e65c00;
+    }
+
+    .cart-badge {
+      background: linear-gradient(135deg, #e65c00, #ff8c42);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: bold;
+      border-radius: 50px;
+      padding: 0.2rem 0.55rem;
+      margin-left: 0.35rem;
+      display: inline-block;
+      transition: transform 0.2s ease;
+      box-shadow: 0 2px 6px rgba(230,92,0,0.3);
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #e65c00;
+      transition: transform 0.2s;
+    }
+    .menu-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 0.75rem 1rem; }
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        padding: 1.2rem 0 0.8rem 0;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 1.5rem;
+        margin-top: 0.8rem;
+        animation: slideDown 0.3s ease;
+      }
+      .nav-links.show { display: flex; }
+      .nav-links li { width: 100%; text-align: center; }
+      .nav-container { flex-wrap: wrap; }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* container & animations */
+    .container {
+      max-width: 1280px;
+      margin: 2rem auto;
+      padding: 0 1.8rem;
+      min-height: 65vh;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, #2d1b0e, #e65c00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      border-left: 6px solid #e65c00;
+      padding-left: 1.2rem;
+      letter-spacing: -0.3px;
+    }
+
+    /* food grid animations */
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .food-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(2px);
+      border-radius: 2rem;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      cursor: pointer;
+      border: 1px solid rgba(230,92,0,0.1);
+    }
+
+    .food-card:hover {
+      transform: translateY(-12px) scale(1.01);
+      box-shadow: 0 30px 45px rgba(230, 92, 0, 0.15);
+      border-color: rgba(230,92,0,0.3);
+    }
+
+    .food-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .food-card:hover .food-img {
+      transform: scale(1.05);
+    }
+
+    .food-info {
+      padding: 1.4rem;
+    }
+    .food-info h3 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #2d1b0e;
+    }
+    .food-desc {
+      color: #7a5a44;
+      font-size: 0.85rem;
+      margin: 0.6rem 0;
+    }
+    .price {
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: #e65c00;
+      margin: 0.6rem 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .price::before {
+      content: '$';
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .add-to-cart {
+      background: linear-gradient(95deg, #e65c00, #ff8c42);
+      color: white;
+      border: none;
+      padding: 0.7rem 1rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.25s ease;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(230,92,0,0.3);
+    }
+    .add-to-cart i {
+      transition: transform 0.2s;
+    }
+    .add-to-cart:hover {
+      background: linear-gradient(95deg, #bf4c00, #e6731f);
+      transform: scale(0.98);
+      box-shadow: 0 2px 6px rgba(230,92,0,0.4);
+    }
+    .add-to-cart:hover i {
+      transform: translateX(4px);
+    }
+
+    /* about & contact card style */
+    .about-content, .contact-form {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      padding: 2.2rem;
+      border-radius: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(230,92,0,0.15);
+      transition: transform 0.2s;
+    }
+    .about-content p {
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .contact-form input, .contact-form textarea {
+      width: 100%;
+      padding: 0.9rem;
+      margin: 0.7rem 0;
+      border: 2px solid #ffe0cc;
+      border-radius: 1.2rem;
+      font-size: 1rem;
+      transition: all 0.2s;
+      background: white;
+    }
+    .contact-form input:focus, .contact-form textarea:focus {
+      border-color: #e65c00;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(230,92,0,0.2);
+    }
+    .contact-form button {
+      background: linear-gradient(95deg, #e65c00, #ffaa55);
+      color: white;
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+    .contact-form button:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(230,92,0,0.3);
+    }
+
+    /* cart table modern */
+    .cart-table {
+      background: white;
+      border-radius: 2rem;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      background: #fff1e6;
+      padding: 1.2rem;
+      font-weight: 700;
+      color: #e65c00;
+    }
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #f7e5d9;
+    }
+    .cart-actions button {
+      background: #ff6b6b;
+      border: none;
+      color: white;
+      padding: 0.4rem 0.9rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      margin: 0 0.2rem;
+      transition: all 0.2s;
+      font-weight: bold;
+    }
+    .cart-actions button:hover {
+      background: #e65c00;
+      transform: scale(1.05);
+    }
+    .cart-summary {
+      margin-top: 2rem;
+      text-align: right;
+      background: white;
+      padding: 1.8rem;
+      border-radius: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+    .checkout-btn {
+      background: linear-gradient(95deg, #2c7a47, #3e9b5e);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 3rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: 1rem;
+    }
+    .checkout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(44,122,71,0.3);
+    }
+    .empty-cart {
+      text-align: center;
+      padding: 3.5rem;
+      background: rgba(255,255,240,0.8);
+      border-radius: 2rem;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(230,92,0,0.2); }
+      70% { box-shadow: 0 0 0 12px rgba(230,92,0,0); }
+      100% { box-shadow: 0 0 0 0 rgba(230,92,0,0); }
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: #1e1915;
+      color: #ccb69b;
+      margin-top: 3rem;
+      font-size: 0.85rem;
+    }
+
+    /* toast animation */
+    .toast-msg {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, #1e5631, #2e7d32);
+      color: white;
+      padding: 1rem 1.8rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      z-index: 1100;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideInRight 0.3s, fadeOut 2.5s forwards;
+      backdrop-filter: blur(4px);
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeOut {
+      0% { opacity: 1; visibility: visible; }
+      80% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; transform: translateX(20px); }
+    }
+  </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header>
-        <div class="container">
-            <div class="logo">
-                <img src="img/logo.png" alt="Foodie Spice Logo">
-                <h1>Foodie Spice</h1>
-            </div>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="index.html" class="active">🏠 Home</a></li>
-                    <li><a href="menu.html">🍕 Menu</a></li>
-                    <li><a href="about.html">📖 About</a></li>
-                    <li><a href="contact.html">📞 Contact</a></li>
-                    <li><a href="#" id="cartLink">🛒 Cart <span class="cart-count">0</span></a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>🍔 Delicious Food Delivered to Your Doorstep 🍕</h1>
-                <p>Order from our wide selection of mouth-watering dishes prepared by top chefs</p>
-                <a href="menu.html" class="btn-primary">Order Now →</a>
-            </div>
-        </div>
-    </section>
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="logo"><a href="#" data-nav="home"><i class="fas fa-utensils"></i> FlavorHaven</a></div>
+    <button class="menu-toggle" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" data-nav="home"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="#" data-nav="about"><i class="fas fa-info-circle"></i> About Us</a></li>
+      <li><a href="#" data-nav="cart"><i class="fas fa-shopping-cart"></i> Cart <span id="cartCountBadge" class="cart-badge">0</span></a></li>
+      <li><a href="#" data-nav="contact"><i class="fas fa-envelope"></i> Contact Us</a></li>
+    </ul>
+  </div>
+</nav>
 
-    <!-- Categories Section -->
-    <section class="categories">
-        <div class="container">
-            <h2>🔥 Popular Categories</h2>
-            <div class="category-grid">
-                <div class="category-card">
-                    <img src="img/category/pizza.jpg" alt="Pizza">
-                    <h3>🍕 Pizza</h3>
-                </div>
-                <div class="category-card">
-                    <img src="img/category/burger.jpg" alt="Burgers">
-                    <h3>🍔 Burgers</h3>
-                </div>
-                <div class="category-card">
-                    <img src="img/category/sandwich.jpg" alt="Sandwiches">
-                    <h3>🥪 Sandwiches</h3>
-                </div>
-            </div>
-        </div>
-    </section>
+<main id="app-root"></main>
+<footer>
+<p>
+  <i class="fas fa-heart" style="color:#e65c00;"></i> © 2026 FlavorHaven — Sizzling tastes, delivered with love.
+  <i class="fas fa-motorcycle"></i> | Developed by 
+  <span style="font-weight: bold; color: #ff6b00; font-size: 16px;">
+    Dua Batool
+  </span>
+</p>
+</footer>
 
-    <!-- Featured Items Section -->
-    <section class="featured">
-        <div class="container">
-            <h2>⭐ Featured Items</h2>
-            <div class="food-grid" id="featuredFoods">
-                <!-- Featured items will be loaded here by JavaScript -->
-            </div>
-        </div>
-    </section>
+<script>
+  // ---------- MENU WITH DELICIOUS IMAGES (better placeholders) ----------
+  const menuItems = [
+    { id: 1, name: "Margherita Pizza", desc: "Fresh mozzarella, tomato sauce, basil & olive oil", price: 12.99, img: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&h=400&fit=crop" },
+    { id: 2, name: "Spaghetti Carbonara", desc: "Creamy egg, pancetta, pecorino, black pepper", price: 14.49, img: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=500&h=400&fit=crop" },
+    { id: 3, name: "Vegan Buddha Bowl", desc: "Quinoa, avocado, chickpeas, kale, tahini", price: 11.99, img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&h=400&fit=crop" },
+    { id: 4, name: "Classic Cheeseburger", desc: "Angus beef, cheddar, lettuce, special sauce", price: 13.79, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop" },
+    { id: 5, name: "Chicken Tikka Masala", desc: "Grilled chicken, creamy tomato curry, basmati rice", price: 15.99, img: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&h=400&fit=crop" },
+    { id: 6, name: "Fresh Sushi Roll", desc: "Salmon, avocado, cucumber, soy sauce, wasabi", price: 17.49, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&h=400&fit=crop" }
+  ];
 
-    <!-- Cart Modal -->
-    <div class="cart-modal" id="cartModal">
-        <div class="cart-content">
-            <div class="cart-header">
-                <h2>🛒 Your Cart</h2>
-                <span class="close-btn" id="closeCart">&times;</span>
-            </div>
-            <div class="cart-body">
-                <div id="cartItems">
-                    <!-- Cart items will be loaded here -->
-                    <p class="empty-cart-message">🛍️ Your cart is empty</p>
-                </div>
-                <div class="cart-footer">
-                    <div class="cart-total">
-                        <h3>Total: $<span id="cartTotal">0.00</span></h3>
-                    </div>
-                    <button class="btn-primary checkout-btn" id="checkoutBtn">✅ Checkout</button>
-                </div>
-            </div>
-        </div>
-    </div>
+  let cart = [];
+  let currentPage = 'home';
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>🍽️ Foodie Spice</h3>
-                    <p>Delivering delicious food with love since 2025</p>
-                    <p style="margin-top: 15px;">⭐ 4.8 ★ (500+ reviews)</p>
-                </div>
-                <div class="footer-section">
-                    <h3>🔗 Quick Links</h3>
-                    <ul>
-                        <li><a href="index.html">🏠 Home</a></li>
-                        <li><a href="menu.html">🍕 Menu</a></li>
-                        <li><a href="about.html">📖 About</a></li>
-                        <li><a href="contact.html">📞 Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>📞 Contact Us</h3>
-                    <p><i class="fas fa-map-marker-alt"></i> 123 Food Street, Yummy City</p>
-                    <p><i class="fas fa-phone"></i> (123) 456-7890</p>
-                    <p><i class="fas fa-envelope"></i> info@foodiedelight.com</p>
-                    <p><i class="fab fa-instagram"></i> @foodiedelight</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Foodie Spice. All rights reserved. 🍔 Made with ❤️</p>
-            </div>
-        </div>
-    </footer>
+  function loadCartFromStorage() {
+    const stored = localStorage.getItem('flavor_cart');
+    if(stored) { try { cart = JSON.parse(stored); } catch(e) { cart = []; } }
+    else { cart = []; }
+    updateCartBadge();
+  }
+  function saveCartToStorage() { localStorage.setItem('flavor_cart', JSON.stringify(cart)); updateCartBadge(); }
+  function updateCartBadge() {
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const badge = document.getElementById('cartCountBadge');
+    if(badge) badge.innerText = totalQty;
+  }
+  function showToast(msg, isError = false) {
+    const existing = document.querySelector('.toast-msg');
+    if(existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = 'toast-msg';
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => { if(toast && toast.remove) toast.remove(); }, 2500);
+  }
+  function addToCart(productId) {
+    const item = menuItems.find(m => m.id === productId);
+    if(!item) return;
+    const existing = cart.find(c => c.id === productId);
+    if(existing) existing.quantity += 1;
+    else cart.push({ id: item.id, name: item.name, price: item.price, quantity: 1 });
+    saveCartToStorage();
+    showToast(`🍕 ${item.name} added!`, false);
+    if(currentPage === 'cart') renderCartPage();
+  }
+  function removeFromCart(productId, removeAll = false) {
+    const index = cart.findIndex(c => c.id === productId);
+    if(index === -1) return;
+    if(removeAll || cart[index].quantity === 1) cart.splice(index, 1);
+    else cart[index].quantity -= 1;
+    saveCartToStorage();
+    if(currentPage === 'cart') renderCartPage();
+    else updateCartBadge();
+    showToast("Cart updated", false);
+  }
+  function clearCart() { cart = []; saveCartToStorage(); if(currentPage === 'cart') renderCartPage(); showToast("Cart cleared", false); }
+  function getCartTotal() { return cart.reduce((sum, i) => sum + (i.price * i.quantity), 0); }
 
-    <script src="script.js"></script>
+  // RENDER FUNCTIONS
+  function renderHomePage() {
+    const container = document.getElementById('app-root');
+    container.innerHTML = `<div class="container"><h1 class="page-title"><i class="fas fa-fire"></i> Signature Delights</h1><div class="food-grid" id="foodGrid"></div></div>`;
+    const grid = document.getElementById('foodGrid');
+    menuItems.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'food-card';
+      card.innerHTML = `
+        <img class="food-img" src="${item.img}" alt="${item.name}" loading="lazy">
+        <div class="food-info">
+          <h3>${item.name}</h3>
+          <p class="food-desc">${item.desc}</p>
+          <div class="price">${item.price.toFixed(2)}</div>
+          <button class="add-to-cart" data-id="${item.id}"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); const id = parseInt(btn.dataset.id); addToCart(id); });
+    });
+  }
+
+  function renderAboutPage() {
+    const container = document.getElementById('app-root');
+    container.innerHTML = `
+      <div class="container">
+        <h1 class="page-title"><i class="fas fa-seedling"></i> About FlavorHaven</h1>
+        <div class="about-content">
+          <p><i class="fas fa-quote-left" style="color:#e65c00;"></i> Founded in 2023, FlavorHaven was born from a love for bold, authentic tastes. We partner with local farms and artisans to craft meals that celebrate tradition and innovation.</p>
+          <p><i class="fas fa-globe"></i> 🌱 Our mission: bring happiness through exceptional food, sustainable packaging, and lightning-fast delivery. Every dish is made fresh, never frozen.</p>
+          <p><i class="fas fa-people-arrows"></i> 👨‍🍳 Our chefs are passionate creators, blending global flavors with local inspiration. From sizzling pizzas to exotic curries, we've got something for every craving.</p>
+          <p><i class="fas fa-star"></i> ⭐ Over 10,000+ happy customers and growing — join the FlavorHaven family today!</p>
+          <div style="margin-top:1.5rem; background:#fff0e5; border-radius:1.5rem; padding:1rem; text-align:center;"><i class="fas fa-truck-fast"></i> Free delivery on orders over $30!</div>
+        </div>
+      </div>`;
+  }
+
+  function renderCartPage() {
+    const container = document.getElementById('app-root');
+    if(cart.length === 0) {
+      container.innerHTML = `<div class="container"><h1 class="page-title"><i class="fas fa-shopping-bag"></i> Your Cart</h1><div class="empty-cart"><i class="fas fa-sad-tear" style="font-size:3rem; color:#e65c00;"></i><p style="margin:1rem 0;">Your cart is empty 😢</p><button class="add-to-cart" id="browseMenuBtn" style="width:auto; margin:0 auto;"><i class="fas fa-utensils"></i> Browse Menu</button></div></div>`;
+      const browseBtn = document.getElementById('browseMenuBtn');
+      if(browseBtn) browseBtn.addEventListener('click', () => navigateTo('home'));
+      return;
+    }
+    let cartHtml = `<div class="container"><h1 class="page-title"><i class="fas fa-shopping-cart"></i> Shopping Cart</h1><div class="cart-table"><table><thead><tr><th>Item</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th>Action</th></tr></thead><tbody>`;
+    cart.forEach(item => {
+      const subtotal = item.price * item.quantity;
+      cartHtml += `<tr><td><strong><i class="fas fa-hamburger"></i> ${item.name}</strong></td><td>$${item.price.toFixed(2)}</td><td>${item.quantity}</td><td>$${subtotal.toFixed(2)}</td><td class="cart-actions"><button class="inc-qty" data-id="${item.id}"><i class="fas fa-plus"></i></button><button class="dec-qty" data-id="${item.id}"><i class="fas fa-minus"></i></button><button class="remove-item" data-id="${item.id}"><i class="fas fa-trash"></i></button></td></tr>`;
+    });
+    const total = getCartTotal();
+    cartHtml += `</tbody></table></div><div class="cart-summary"><h3><i class="fas fa-receipt"></i> Total: $${total.toFixed(2)}</h3><button id="clearCartBtn" class="checkout-btn" style="background:#b93b1a;"><i class="fas fa-trash-alt"></i> Clear Cart</button><button id="checkoutBtn" class="checkout-btn"><i class="fas fa-credit-card"></i> Proceed to Checkout</button></div></div>`;
+    container.innerHTML = cartHtml;
+    document.querySelectorAll('.inc-qty').forEach(btn => { btn.addEventListener('click', (e) => { const id = parseInt(btn.dataset.id); addToCart(id); }); });
+    document.querySelectorAll('.dec-qty').forEach(btn => { btn.addEventListener('click', (e) => { const id = parseInt(btn.dataset.id); removeFromCart(id, false); }); });
+    document.querySelectorAll('.remove-item').forEach(btn => { btn.addEventListener('click', (e) => { const id = parseInt(btn.dataset.id); removeFromCart(id, true); }); });
+    document.getElementById('clearCartBtn')?.addEventListener('click', () => clearCart());
+    document.getElementById('checkoutBtn')?.addEventListener('click', () => { if(cart.length) { showToast("🎉 Order placed successfully! Thank you for ordering."); cart = []; saveCartToStorage(); renderCartPage(); updateCartBadge(); } else showToast("Cart empty", true); });
+  }
+
+  function renderContactPage() {
+    const container = document.getElementById('app-root');
+    container.innerHTML = `<div class="container"><h1 class="page-title"><i class="fas fa-headset"></i> Contact Us</h1><div class="contact-form"><p><i class="fas fa-comment-dots"></i> Have questions? We're here to help!</p><form id="contactForm"><input type="text" placeholder="Your Name" required id="contactName"><input type="email" placeholder="Email Address" required id="contactEmail"><textarea rows="4" placeholder="Your message..." required id="contactMsg"></textarea><button type="submit"><i class="fas fa-paper-plane"></i> Send Message</button></form><div style="margin-top:2rem; background:#fff6ef; border-radius:1.5rem; padding:1.2rem;"><p><i class="fas fa-map-marker-alt" style="color:#e65c00;"></i> <strong>📍 Address:</strong> 123 Foodie Lane, FlavorTown, NY 10001</p><p><i class="fas fa-phone-alt"></i> <strong>📞 Phone:</strong> +1 (555) 789-ORDER</p><p><i class="fas fa-clock"></i> <strong>⏰ Hours:</strong> Mon-Sun 11am - 10pm</p></div></div></div>`;
+    const form = document.getElementById('contactForm');
+    if(form) form.addEventListener('submit', (e) => { e.preventDefault(); const name = document.getElementById('contactName').value; if(name) showToast(`✨ Thanks ${name}, we'll reply soon!`); form.reset(); });
+  }
+
+  function navigateTo(page) {
+    currentPage = page;
+    if(page === 'home') renderHomePage();
+    else if(page === 'about') renderAboutPage();
+    else if(page === 'cart') renderCartPage();
+    else if(page === 'contact') renderContactPage();
+    document.querySelectorAll('.nav-links a').forEach(link => { const navVal = link.getAttribute('data-nav'); if(navVal === page) link.classList.add('active'); else link.classList.remove('active'); });
+    const logoLink = document.querySelector('.logo a');
+    if(logoLink) { if(page === 'home') logoLink.classList.add('active'); else logoLink.classList.remove('active'); }
+    const navLinks = document.getElementById('navLinks');
+    if(window.innerWidth <= 768 && navLinks.classList.contains('show')) navLinks.classList.remove('show');
+  }
+
+  function bindNavigation() {
+    document.querySelectorAll('.nav-links a').forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); const page = link.getAttribute('data-nav'); if(page) navigateTo(page); }); });
+    const logo = document.querySelector('.logo a');
+    if(logo) logo.addEventListener('click', (e) => { e.preventDefault(); navigateTo('home'); });
+  }
+  function initMobileMenu() {
+    const toggle = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+    if(toggle && navLinks) toggle.addEventListener('click', () => navLinks.classList.toggle('show'));
+  }
+  window.addEventListener('resize', () => { const navLinks = document.getElementById('navLinks'); if(window.innerWidth > 768 && navLinks) navLinks.classList.remove('show'); });
+  function init() { loadCartFromStorage(); bindNavigation(); initMobileMenu(); navigateTo('home'); }
+  init();
+</script>
 </body>
 </html>
